@@ -6,13 +6,13 @@
     "email": "info@gluak.com"
   },
   "description": "Daniele Petroselli's personal Claude Code toolkit — skills, agents and helpers tuned to the way Gluak works. Grows over time.",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "plugins": [
     {
       "name": "gluak",
       "source": "./plugins/gluak",
       "description": "All Gluak skills in one plugin — project bootstrap (`setup`), portable repo memory (`memory`), and future helpers. Install once, get everything.",
-      "version": "0.5.0"
+      "version": "0.6.0"
     }
   ]
 }

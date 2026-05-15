@@ -30,19 +30,27 @@ Single plugin: **`gluak`**. Skills shipped with it:
 
 Runs Daniele's standard project setup runbook so every new project starts the same way:
 
-1. **Git init + Gluak `.gitignore`** — `git init` if needed; merges Gluak-flavoured rules
-   (`.claude/*` + `!.claude/skills/`, secrets, deps, build) into any existing
+1. **Bootstrap permission allowlist** — pre-populates `.claude/settings.json` with a
+   narrow allowlist covering exactly the operations the rest of the runbook performs
+   (`Bash(git init)`, `Bash(mkdir -p *)`, `Write(CLAUDE.md)`, `Write(context/*)`, …).
+   Without this step, every subsequent step on a fresh project would trigger its own
+   permission prompt — `gluak:setup` would feel like a thousand-question wizard.
+   With it, only one prompt fires (the write of `.claude/settings.json` itself), then
+   the rest of the runbook is silent.
+2. **Git init + Gluak `.gitignore`** — `git init` if needed; merges Gluak-flavoured
+   rules (`.claude/*` + `!.claude/skills/`, secrets, deps, build) into any existing
    `.gitignore` without overwriting.
-2. **Scaffold portable repo memory** — invokes `gluak:memory` to create or integrate
+3. **Scaffold portable repo memory** — invokes `gluak:memory` to create or integrate
    `CLAUDE.md` + `context/`.
-3. **Bash-call convention** — appends the "single commands, not compound" project rule
+4. **Bash-call convention** — appends the "single commands, not compound" project rule
    to `CLAUDE.md`. This is what makes the per-command allowlist actually silence
    permission prompts: the permission system matches the *full* command string, so
    compound `&&` / `;` / pipe commands never match per-command allowlist entries —
    granular Bash calls do.
-4. **Reduce permission prompts** — invokes Anthropic's `fewer-permission-prompts` to
-   build a per-project allowlist from past transcripts. Skipped on fresh projects with
-   no transcripts to learn from.
+5. **Reduce permission prompts** — invokes Anthropic's `fewer-permission-prompts` to
+   build a broader per-project allowlist from past transcripts. Skipped on fresh
+   projects with no transcripts to learn from. Merges on top of the step-1 entries
+   without removing them.
 
 Idempotent. Re-running `gluak:setup` on an already-set-up project only fills what's
 missing. Never overwrites, never commits.

@@ -1,6 +1,6 @@
 ---
 name: setup
-description: Bootstrap a new project the Gluak way — runs Daniele Petroselli's standard project setup runbook in one go. Initializes git (if needed) with a Gluak-flavoured `.gitignore`, scaffolds the portable `CLAUDE.md` + `context/` knowledge base via the `memory` skill, writes the Gluak Bash-call convention into the project's `CLAUDE.md`, and reduces permission prompts via the Anthropic `fewer-permission-prompts` skill. Use when starting a new project or repo, when the user says "set up this project", "bootstrap this repo", "gluak setup", "/gluak:setup", or when they want their standard Gluak project scaffolding applied.
+description: Bootstrap a new project the Gluak way — runs Daniele Petroselli's standard project setup runbook in one go. Pre-allowlists the operations the runbook itself performs so the first run on a fresh project is quiet, initializes git (if needed) with a Gluak-flavoured `.gitignore`, scaffolds the portable `CLAUDE.md` + `context/` knowledge base via the `memory` skill, writes the Gluak Bash-call convention into the project's `CLAUDE.md`, and reduces permission prompts via the Anthropic `fewer-permission-prompts` skill. Use when starting a new project or repo, when the user says "set up this project", "bootstrap this repo", "gluak setup", "/gluak:setup", or when they want their standard Gluak project scaffolding applied.
 ---
 
 # setup
@@ -20,7 +20,50 @@ step.
 
 ## Runbook
 
-### 1. Git init + Gluak `.gitignore`
+### 1. Bootstrap permission allowlist
+
+This step runs **first** so the rest of `gluak:setup` is quiet on a fresh project —
+otherwise every subsequent step would trigger its own permission prompt and
+`gluak:setup` would feel like a thousand-question wizard. The allowlist added here is
+intentionally narrow: it only covers the operations `gluak:setup` itself is about to
+perform, nothing broader.
+
+Ensure the project's `.claude/settings.json` exists. Under `permissions.allow`, add the
+following entries (idempotent — only add the ones not already present, never remove
+anything, never reorder existing entries):
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init)",
+      "Bash(mkdir -p *)",
+      "Write(.gitignore)",
+      "Edit(.gitignore)",
+      "Write(CLAUDE.md)",
+      "Edit(CLAUDE.md)",
+      "Write(context/*)",
+      "Edit(context/*)",
+      "Write(.claude/settings.json)",
+      "Edit(.claude/settings.json)"
+    ]
+  }
+}
+```
+
+Notes:
+
+- The very first time this step runs, **writing `.claude/settings.json` itself will
+  trigger a single prompt** (a chicken-and-egg you can't avoid). After that, the rest
+  of the runbook stays silent.
+- These patterns are scoped to operations the rest of `gluak:setup` performs. They do
+  **not** silence prompts for real-work file writes you'll do later in the project —
+  step 5's `fewer-permission-prompts` invocation builds the broader allowlist over time
+  from your actual usage.
+- If `.claude/settings.json` already exists, merge: preserve existing keys, dedupe
+  entries against `permissions.allow`, never delete or reorder anything.
+
+### 2. Git init + Gluak `.gitignore`
 
 - If the directory is **not** a git repo: `git init`.
 - Ensure `.gitignore` at the repo root contains, at minimum:
@@ -47,17 +90,17 @@ step.
   preserve any existing rules.
 - Do **not** commit. Working-tree changes only.
 
-### 2. Scaffold portable repo memory
+### 3. Scaffold portable repo memory
 
 Invoke the `memory` skill (same plugin). It detects scaffold / adopt / maintenance mode
 automatically based on whether `CLAUDE.md` and `context/` already exist, and creates or
 integrates them as needed.
 
-### 3. Write the Gluak Bash-call convention into `CLAUDE.md`
+### 4. Write the Gluak Bash-call convention into `CLAUDE.md`
 
 This makes the "single calls, not compound commands" rule a project norm — auto-loaded
 every session, so future Claude sessions on this project follow it without being asked.
-The rule pairs with step 4 (the per-command allowlist): granular calls match the
+The rule pairs with step 5 (the per-command allowlist): granular calls match the
 allowlist, compound commands don't.
 
 If the project's `CLAUDE.md` does **not** already contain the heading
@@ -90,17 +133,18 @@ This rule was set by the `gluak:setup` skill.
 If the heading already exists, **leave it alone** — idempotent. If it exists but has
 clearly drifted, surface the drift to the user; do not silently rewrite it.
 
-### 4. Reduce permission prompts
+### 5. Reduce permission prompts
 
 Invoke the Anthropic `fewer-permission-prompts` skill. It scans recent transcripts for
 read-only Bash and MCP tool calls that triggered permission prompts and adds a prioritized
-allowlist to `.claude/settings.json`.
+allowlist to `.claude/settings.json`. (The narrow setup-specific entries from step 1
+are preserved by the merge — `fewer-permission-prompts` adds on top of them.)
 
 If there are no transcripts yet (fresh project), tell the user this step will be more
 useful after a few sessions of real work, and **skip it** rather than producing an empty
 allowlist.
 
-### 5. Report
+### 6. Report
 
 End with a one-line summary of what was done and what still needs the user's input
 (typically: the `<!-- TODO -->` placeholders in `CLAUDE.md` from the `memory` scaffold,
@@ -119,5 +163,8 @@ and any project-specific `context/` files to fill in).
 ## Extending the runbook
 
 Add new steps here as the standard Gluak setup grows. Keep ordering intentional —
-foundational steps (git, gitignore) first, then knowledge base, then tooling
-configuration.
+the bootstrap allowlist (step 1) stays first so subsequent steps don't get prompted;
+foundational filesystem steps (git, gitignore) come right after; then knowledge base;
+then tooling configuration. If you add a new step that performs operations not covered
+by the current step-1 allowlist, extend that allowlist accordingly so the new step is
+quiet too.
