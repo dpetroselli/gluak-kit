@@ -1,18 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace-manifest.json",
-  "name": "gluak-claude-kit",
+  "name": "gluak-kit",
   "owner": {
     "name": "Daniele Petroselli",
     "email": "info@gluak.com"
   },
   "description": "Daniele Petroselli's personal Claude Code toolkit — skills, agents and helpers tuned to the way Gluak works. Grows over time.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "plugins": [
     {
-      "name": "gluak-toolkit",
-      "source": "./plugins/gluak-toolkit",
+      "name": "gluak",
+      "source": "./plugins/gluak",
       "description": "All Gluak skills in one plugin — project bootstrap (`gluak-setup`), portable repo memory (`repo-memory`), and future helpers. Install once, get everything.",
-      "version": "0.2.0"
+      "version": "0.3.0"
     }
   ]
 }
