@@ -10,7 +10,7 @@ Single plugin: **`gluak`**. Skills shipped with it:
 
 | Skill | What it does |
 |---|---|
-| `gluak-setup` | Bootstrap a new project the Gluak way — git init + Gluak `.gitignore`, scaffold the portable `CLAUDE.md` + `context/` knowledge base (via `repo-memory`), reduce permission prompts (via Anthropic's `fewer-permission-prompts`). Run once per new project. |
+| `gluak-setup` | Bootstrap a new project the Gluak way — git init + Gluak `.gitignore`, scaffold the portable `CLAUDE.md` + `context/` knowledge base (via `repo-memory`), write the Gluak Bash-call convention into the project's `CLAUDE.md`, reduce permission prompts (via Anthropic's `fewer-permission-prompts`). Run once per new project. |
 | `repo-memory` | Portable, repo-versioned project knowledge base — a root `CLAUDE.md` (index + essentials + workflow) plus a `context/` directory of detailed topic files that travels with the git repo and is restored on any checkout. |
 
 ## Install

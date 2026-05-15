@@ -1,6 +1,6 @@
 ---
 name: gluak-setup
-description: Bootstrap a new project the Gluak way — runs Daniele Petroselli's standard project setup runbook in one go. Initializes git (if needed) with a Gluak-flavoured `.gitignore`, scaffolds the portable `CLAUDE.md` + `context/` knowledge base via the `repo-memory` skill, and reduces permission prompts via the Anthropic `fewer-permission-prompts` skill. Use when starting a new project or repo, when the user says "set up this project", "bootstrap this repo", "gluak setup", "/gluak-setup", or when they want their standard Gluak project scaffolding applied.
+description: Bootstrap a new project the Gluak way — runs Daniele Petroselli's standard project setup runbook in one go. Initializes git (if needed) with a Gluak-flavoured `.gitignore`, scaffolds the portable `CLAUDE.md` + `context/` knowledge base via the `repo-memory` skill, writes the Gluak Bash-call convention into the project's `CLAUDE.md`, and reduces permission prompts via the Anthropic `fewer-permission-prompts` skill. Use when starting a new project or repo, when the user says "set up this project", "bootstrap this repo", "gluak setup", "/gluak-setup", or when they want their standard Gluak project scaffolding applied.
 ---
 
 # gluak-setup
@@ -53,7 +53,44 @@ Invoke the `repo-memory` skill (same plugin). It detects scaffold / adopt / main
 mode automatically based on whether `CLAUDE.md` and `context/` already exist, and creates
 or integrates them as needed.
 
-### 3. Reduce permission prompts
+### 3. Write the Gluak Bash-call convention into `CLAUDE.md`
+
+This makes the "single calls, not compound commands" rule a project norm — auto-loaded
+every session, so future Claude sessions on this project follow it without being asked.
+The rule pairs with step 4 (the per-command allowlist): granular calls match the
+allowlist, compound commands don't.
+
+If the project's `CLAUDE.md` does **not** already contain the heading
+`## Bash convention — single commands, not compound`, append this block verbatim at the
+end of the file:
+
+```markdown
+## Bash convention — single commands, not compound
+
+Emit many small Bash tool calls instead of chaining shell with `&&`, `;`, or pipes.
+The permission system matches the **full command string** against the allowlist, so a
+compound command never matches a per-command entry like `Bash(git status:*)` —
+it triggers a permission prompt every time. Granular calls match the allowlist and
+stay silent.
+
+- Independent steps → separate Bash tool calls in the same response (the harness runs
+  them in parallel).
+- Steps with data flow → still separate calls when intermediate state can be routed via
+  a temp file or a deterministic path.
+- Chain with `&&` **only** when shell state must thread between steps in a way separate
+  calls cannot reproduce (e.g. `cd <dir> && <relative-path-command>`). Prefer absolute
+  paths and explicit env to remove even this case.
+- Never use `;` (silently masks failures).
+- Never pipe purely for output formatting that can be done in a second read or with a
+  dedicated tool.
+
+This rule was set by `gluak-setup`.
+```
+
+If the heading already exists, **leave it alone** — idempotent. If it exists but has
+clearly drifted, surface the drift to the user; do not silently rewrite it.
+
+### 4. Reduce permission prompts
 
 Invoke the Anthropic `fewer-permission-prompts` skill. It scans recent transcripts for
 read-only Bash and MCP tool calls that triggered permission prompts and adds a prioritized
@@ -63,7 +100,7 @@ If there are no transcripts yet (fresh project), tell the user this step will be
 useful after a few sessions of real work, and **skip it** rather than producing an empty
 allowlist.
 
-### 4. Report
+### 5. Report
 
 End with a one-line summary of what was done and what still needs the user's input
 (typically: the `<!-- TODO -->` placeholders in `CLAUDE.md` from the `repo-memory`
