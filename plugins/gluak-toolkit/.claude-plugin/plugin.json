@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "gluak-toolkit",
+  "version": "0.2.0",
+  "description": "Daniele Petroselli's personal toolkit of Claude Code skills — project bootstrap, portable repo memory, and helpers tuned to the way Gluak works. One install, all skills.",
+  "author": {
+    "name": "Daniele Petroselli",
+    "email": "info@gluak.com"
+  }
+}
