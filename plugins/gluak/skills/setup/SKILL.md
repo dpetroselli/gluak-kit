@@ -1,9 +1,9 @@
 ---
-name: gluak-setup
-description: Bootstrap a new project the Gluak way — runs Daniele Petroselli's standard project setup runbook in one go. Initializes git (if needed) with a Gluak-flavoured `.gitignore`, scaffolds the portable `CLAUDE.md` + `context/` knowledge base via the `repo-memory` skill, writes the Gluak Bash-call convention into the project's `CLAUDE.md`, and reduces permission prompts via the Anthropic `fewer-permission-prompts` skill. Use when starting a new project or repo, when the user says "set up this project", "bootstrap this repo", "gluak setup", "/gluak-setup", or when they want their standard Gluak project scaffolding applied.
+name: setup
+description: Bootstrap a new project the Gluak way — runs Daniele Petroselli's standard project setup runbook in one go. Initializes git (if needed) with a Gluak-flavoured `.gitignore`, scaffolds the portable `CLAUDE.md` + `context/` knowledge base via the `memory` skill, writes the Gluak Bash-call convention into the project's `CLAUDE.md`, and reduces permission prompts via the Anthropic `fewer-permission-prompts` skill. Use when starting a new project or repo, when the user says "set up this project", "bootstrap this repo", "gluak setup", "/gluak:setup", or when they want their standard Gluak project scaffolding applied.
 ---
 
-# gluak-setup
+# setup
 
 Project bootstrap for Daniele's standard Gluak workflow. One invocation = the same
 opinionated setup applied consistently to every new project.
@@ -11,7 +11,7 @@ opinionated setup applied consistently to every new project.
 ## When this skill runs
 
 Trigger when the user is starting a new project / repo and wants the standard scaffolding
-applied — e.g. they ran `/gluak-setup`, said "bootstrap this repo", "set up this project
+applied — e.g. they ran `/gluak:setup`, said "bootstrap this repo", "set up this project
 the usual way", or similar.
 
 Confirm the target directory with the user before writing anything if it is not obviously
@@ -49,9 +49,9 @@ step.
 
 ### 2. Scaffold portable repo memory
 
-Invoke the `repo-memory` skill (same plugin). It detects scaffold / adopt / maintenance
-mode automatically based on whether `CLAUDE.md` and `context/` already exist, and creates
-or integrates them as needed.
+Invoke the `memory` skill (same plugin). It detects scaffold / adopt / maintenance mode
+automatically based on whether `CLAUDE.md` and `context/` already exist, and creates or
+integrates them as needed.
 
 ### 3. Write the Gluak Bash-call convention into `CLAUDE.md`
 
@@ -84,7 +84,7 @@ stay silent.
 - Never pipe purely for output formatting that can be done in a second read or with a
   dedicated tool.
 
-This rule was set by `gluak-setup`.
+This rule was set by the `gluak:setup` skill.
 ```
 
 If the heading already exists, **leave it alone** — idempotent. If it exists but has
@@ -103,13 +103,13 @@ allowlist.
 ### 5. Report
 
 End with a one-line summary of what was done and what still needs the user's input
-(typically: the `<!-- TODO -->` placeholders in `CLAUDE.md` from the `repo-memory`
-scaffold, and any project-specific `context/` files to fill in).
+(typically: the `<!-- TODO -->` placeholders in `CLAUDE.md` from the `memory` scaffold,
+and any project-specific `context/` files to fill in).
 
 ## Conventions
 
-- **Idempotent.** Re-running `gluak-setup` on an already-set-up project is safe: each
-  step detects current state and does only what's missing.
+- **Idempotent.** Re-running `setup` on an already-set-up project is safe: each step
+  detects current state and does only what's missing.
 - **Never overwrite.** Existing files are merged or left alone — never replaced.
 - **Never commit.** This skill leaves everything as working-tree changes. Commit is
   always the user's call.

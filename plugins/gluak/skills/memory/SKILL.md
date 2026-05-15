@@ -1,20 +1,21 @@
 ---
-name: repo-memory
-description: Set up or maintain a portable, repo-versioned project knowledge base — a root CLAUDE.md (index + essentials + workflow) plus a context/ directory of detailed topic files — so project memory travels with the git repo and is restored on any checkout. Use when a user wants persistent project memory, asks to set up CLAUDE.md / context for a repo, or wants durable knowledge captured and consolidated into the repo.
+name: memory
+description: Set up or maintain a portable, repo-versioned project knowledge base — a root CLAUDE.md (index + essentials + workflow) plus a context/ directory of detailed topic files — so project memory travels with the git repo and is restored on any clone, checkout or pull, on any machine. Use when a user wants persistent project memory, asks to set up CLAUDE.md / context for a repo, wants durable knowledge captured and consolidated into the repo, or wants their project's memory to follow the codebase rather than live machine-locally.
 ---
 
-# repo-memory
+# memory
 
 Portable project memory that lives **in the git repo**, so any session opened from any
-checkout on any machine has full context. The pattern:
+clone / checkout / pull on any machine has full context. The pattern:
 
 - **`CLAUDE.md`** at the repo root — auto-loaded every session. Index + always-true
   essentials + the capture/push workflow. Kept short.
 - **`context/`** — one detailed file per topic area, read on demand when a task touches
   that area. This is where depth lives.
 
-The repo is the single source of truth. It is portable by construction: `git checkout`
-on any machine restores the full knowledge base.
+The repo is the single source of truth. It is portable by construction: `git clone` /
+`git pull` on any machine restores the full knowledge base — nothing lives only in
+`~/.claude/` machine-locally.
 
 ## When this skill runs
 
@@ -72,12 +73,12 @@ The existing `CLAUDE.md` is the user's — **integrate it, never overwrite it.**
 - **Keep the skill versioned.** If `.gitignore` ignores all of `.claude/`, change it to
   `.claude/*` plus `!.claude/skills/` — committed skills then travel with the repo while
   machine-specific state stays ignored.
-- **Vendor the skill into the repo.** If `repo-memory` is running from a global install
-  (`~/.claude/skills/`) and is not yet committed in this repo's `.claude/skills/`, offer
-  to copy it in, so it travels with every future checkout.
+- **Vendor the skill into the repo.** If the `memory` skill is running from a global
+  install (`~/.claude/skills/`) and is not yet committed in this repo's
+  `.claude/skills/`, offer to copy it in, so it travels with every future checkout.
 - **Do not commit.** Leave everything as working-tree changes — see the workflow below.
 
-## The capture & push workflow (applies in both modes)
+## The capture & push workflow (applies in all modes)
 
 - **Context updates are autonomous.** Capture durable knowledge into `context/` as soon
   as it appears — do not wait to be asked. This is what stops things being lost between
@@ -99,6 +100,6 @@ The existing `CLAUDE.md` is the user's — **integrate it, never overwrite it.**
 
 ## Installing on other machines
 
-This skill is versioned in the repo so it travels with every checkout. It can also be
-copied to `~/.claude/skills/` to be available in every project on a machine — see
-`INSTALL.md`.
+This skill ships in the `gluak` plugin of the `gluak-kit` marketplace. Once
+`/plugin install gluak@gluak-kit` is done on a machine, `memory` is available in every
+project on that machine. See `INSTALL.md` for the in-repo vendoring alternative.
