@@ -1,13 +1,16 @@
 # gluak-claude-kit
 
-Daniele Petroselli's personal Claude Code toolkit — a plugin marketplace of skills,
-agents and helpers tuned to the way Gluak works. It grows over time as new tooling is
-developed.
+Daniele Petroselli's personal Claude Code marketplace — one plugin (`gluak-toolkit`)
+that bundles every Gluak skill: project bootstrap, portable repo memory, and any helpers
+added in the future. Grows over time.
 
-## Plugins
+## What's inside
 
-| Plugin | What it does |
+Single plugin: **`gluak-toolkit`**. Skills shipped with it:
+
+| Skill | What it does |
 |---|---|
+| `gluak-setup` | Bootstrap a new project the Gluak way — git init + Gluak `.gitignore`, scaffold the portable `CLAUDE.md` + `context/` knowledge base (via `repo-memory`), reduce permission prompts (via Anthropic's `fewer-permission-prompts`). Run once per new project. |
 | `repo-memory` | Portable, repo-versioned project knowledge base — a root `CLAUDE.md` (index + essentials + workflow) plus a `context/` directory of detailed topic files that travels with the git repo and is restored on any checkout. |
 
 ## Install
@@ -16,10 +19,12 @@ In any Claude Code session, on any machine:
 
 ```
 /plugin marketplace add dpetroselli/gluak-claude-kit
-/plugin install repo-memory@gluak-claude-kit
+/plugin install gluak-toolkit@gluak-claude-kit
 ```
 
-Then invoke a plugin's skill with its namespaced name — e.g. `/repo-memory:repo-memory`.
+One install, all skills available. Invoke a skill with its namespaced slash command —
+`/gluak-toolkit:gluak-setup`, `/gluak-toolkit:repo-memory`, etc. — or just by describing
+the task (skills auto-trigger from their `description`).
 
 ## Update
 
@@ -27,24 +32,34 @@ Then invoke a plugin's skill with its namespaced name — e.g. `/repo-memory:rep
 /plugin marketplace update gluak-claude-kit
 ```
 
-A plugin updates only when its `version` (in its `plugin.json`) is bumped.
+The plugin updates only when its `version` (in `plugin.json`) is bumped.
 
 ## Layout
 
 ```
 gluak-claude-kit/
 ├── .claude-plugin/
-│   └── marketplace.json          # the marketplace catalog
+│   └── marketplace.json              # the marketplace catalog
 └── plugins/
-    └── repo-memory/
+    └── gluak-toolkit/
         ├── .claude-plugin/
-        │   └── plugin.json       # the plugin manifest
+        │   └── plugin.json           # the plugin manifest
         └── skills/
+            ├── gluak-setup/
+            │   └── SKILL.md
             └── repo-memory/
                 ├── SKILL.md
                 ├── INSTALL.md
                 └── templates/
 ```
 
-Skills are auto-discovered from each plugin's `skills/` directory — no need to declare
-them in `plugin.json`.
+Skills are auto-discovered from `plugins/gluak-toolkit/skills/` — adding a new skill is
+just a new directory with a `SKILL.md` inside. No manifest edits needed.
+
+## Adding a new skill
+
+1. Create `plugins/gluak-toolkit/skills/<your-skill>/SKILL.md` with frontmatter
+   (`name`, `description`) followed by the runbook.
+2. Bump `version` in `plugins/gluak-toolkit/.claude-plugin/plugin.json` and in
+   `.claude-plugin/marketplace.json`.
+3. Commit, push. Users get it on the next `/plugin marketplace update gluak-claude-kit`.
